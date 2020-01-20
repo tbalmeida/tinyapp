@@ -16,5 +16,8 @@
     "url": "https://github.com/tbalmeida/tinyapp/issues"
   },
   "homepage": "https://github.com/tbalmeida/tinyapp#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
