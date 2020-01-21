@@ -7,23 +7,36 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: true}));
+
 app.set("view engine", "ejs");
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new",);
 });
 
+app.get("/", (req, res) => {
+  res.send("<h1 align=center>TinyApp</h1>" +
+  "<p align=center>A full stack web app built with <i>Node</i> and <i>Express</i> that allows users to shorten long URLs (à la bit.ly)!</p>"+
+  "<p align=center><br>A <i>Lighthouse Labs</i> bootcamp assignment.</p>");
+});
+
+
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
-  res.render("urls_index", templateVars);
+  res.render("urls_index", {urls : urlDatabase});
 });
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
+});
+
+app.get("/about", (req, res) => {
+  res.render("about");
 });
 
 app.get("/hello", (req, res) => {
@@ -32,9 +45,10 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: req.param.longURL };
+  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
 });
+
 
 
 // app.get("/hello", (req, res) => {
