@@ -1,9 +1,18 @@
+<html lang="en">
+<head>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  <title>URL - TinyApp Example</title>
+</head>
 
+<body border=3>
+  <%- include('partials/_header') %>
+  
   <h1>TinyApp</h1>
-
+  
   <p>A full stack web app built with Node and Express that allows users to shorten long URLs (à la bit.ly). 
     Takes up the rest of week three. </p>
-
+  
   <h2>Project Description</h2>
   <h3>Goal</h3>
     
@@ -13,24 +22,38 @@
   <p>You will build an HTTP Server that handles requests from the browser (client). Along the way you'll get introduced to some 
     more advanced JavaScript and Node concepts, and you'll also learn more about Express, a web framework which is very popular in 
     the Node community.</p>
+
+    <h2>Functional Requirements</h2>
+    <h3>User Stories</h3>
+    
+    <p><i>As an avid twitter poster,
+    I want to be able to shorten links
+    so that I can fit more non-link text in my tweets.
+    
+    <br><br>As a twitter reader,
+    I want to be able to visit sites via shortened links,
+    so that I can read interesting content.
+    
+    <br><br>(Stretch) As an avid twitter poster,
+    I want to be able to see how many times my subscribers visit my links
+    so that I can learn what content they like.</i></p>
+
+    Display Requirements
+
+
+  <!-- Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
+
+
+
+
   
 
     <!-- https://web.compass.lighthouselabs.ca/projects/w2-url-shortener
-  Functional Requirements
-  User Stories
-  
-  As an avid twitter poster,
-  I want to be able to shorten links
-  so that I can fit more non-link text in my tweets.
-  
-  As a twitter reader,
-  I want to be able to visit sites via shortened links,
-  so that I can read interesting content.
-  
-  (Stretch) As an avid twitter poster,
-  I want to be able to see how many times my subscribers visit my links
-  so that I can learn what content they like.
-  Display Requirements
     
       Site Header:
           if a user is logged in, the header shows:

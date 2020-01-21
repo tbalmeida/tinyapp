@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "./node_modules/.bin/nodemon -L express_server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -10,7 +11,7 @@
     "url": "git+https://github.com/tbalmeida/tinyapp.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Thiago Almeida",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/tbalmeida/tinyapp/issues"
@@ -20,6 +21,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "ejs": "^3.0.1",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "nodemon": "^2.0.2"
   }
 }
