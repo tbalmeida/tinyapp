@@ -72,11 +72,19 @@ app.get("/hello", (req, res) => {
   res.render("hello_world", templateVars);
 });
 
+app.post("/urls/:shortURL/delete", (req, res) => {
+  let shortURL = req.params.shortURL;
+  console.log("Delete this URL", shortURL);
+  delete urlDatabase[shortURL];
+  res.redirect("/urls");
+});
+
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
 });
 
+// redirects the browser to the long URL
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
