@@ -54,24 +54,28 @@ app.get("/", (req, res) => {
   "<p align=center><br>A <i>Lighthouse Labs</i> bootcamp assignment.</p>");
 });
 
-
+// shows all the URLs in a list
 app.get("/urls", (req, res) => {
   res.render("urls_index", {urls : urlDatabase});
 });
 
+// shows all the URL, using the JSON format
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+// shows a page with info about the project (under construction)
 app.get("/about", (req, res) => {
   res.render("about");
 });
 
+// Hello world, default page for testing
 app.get("/hello", (req, res) => {
   let templateVars = { greeting: 'Hello World!' };
   res.render("hello_world", templateVars);
 });
 
+// deletes a URL from the base
 app.post("/urls/:shortURL/delete", (req, res) => {
   let shortURL = req.params.shortURL;
   console.log("Delete this URL", shortURL);
@@ -79,6 +83,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+// display the specific record on a page
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
