@@ -19,8 +19,7 @@
         </form>
         <% } else { %>
           <form method="POST" action="/logout">
-            <label style="color: white;" for="username">Username: </label>  
-            <input type="text" disabled name="username" style="margin-right: 5pt;" value="<%=username%>">
+            <label style="color: white;" for="username">Logged in as <b><%= username%></b> </label>  
             <input type="submit" value="Sign out" class="btn btn-light">
           </form>
           <% } %>
