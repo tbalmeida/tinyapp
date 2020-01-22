@@ -44,9 +44,10 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("<h1 align=center>TinyApp</h1>" +
-  "<p align=center>A full stack web app built with <i>Node</i> and <i>Express</i> that allows users to shorten long URLs (à la bit.ly)!</p>"+
-  "<p align=center><br>A <i>Lighthouse Labs</i> bootcamp assignment.</p>");
+  // res.send("<h1 align=center>TinyApp</h1>" +
+  // "<p align=center>A full stack web app built with <i>Node</i> and <i>Express</i> that allows users to shorten long URLs (à la bit.ly)!</p>"+
+  // "<p align=center><br>A <i>Lighthouse Labs</i> bootcamp assignment.</p>");
+  res.render("urls_index", {urls: urlDatabase});
 });
 
 // shows all the URLs in a list
