@@ -1,6 +1,9 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const app = express();
 const PORT = 8080; // default port 8080
+
+app.use(cookieParser());
 
 // Chars used to generate the short string.
 const aChar = 'abcdefghijklmnopqrstuvxwyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -39,20 +42,25 @@ app.post("/urls", (req, res) => {
   console.log(req.body);  // Log the POST request body to the console
   let newID = generateRandomString(6, aChar);
   {urlDatabase[newID] =  req.body.longURL};
-  console.log("urlDatabase", urlDatabase);
-  res.render("urls_index", {urls: urlDatabase});
+  let templateVars = { username: req.cookies["username"], urls: urlDatabase }
+  res.render("urls_index", templateVars);
+//  res.render("urls_index", {urls: urlDatabase});
 });
 
 app.get("/", (req, res) => {
   // res.send("<h1 align=center>TinyApp</h1>" +
   // "<p align=center>A full stack web app built with <i>Node</i> and <i>Express</i> that allows users to shorten long URLs (à la bit.ly)!</p>"+
   // "<p align=center><br>A <i>Lighthouse Labs</i> bootcamp assignment.</p>");
-  res.render("urls_index", {urls: urlDatabase});
+  let templateVars = { username: req.cookies["username"], urls: urlDatabase }
+  res.render("urls_index", templateVars);
+  // res.render("urls_index", {urls: urlDatabase});
 });
 
 // shows all the URLs in a list
 app.get("/urls", (req, res) => {
-  res.render("urls_index", {urls : urlDatabase});
+  let templateVars = { username: req.cookies["username"], urls: urlDatabase }
+  // res.render("urls_index", {urls : urlDatabase});
+  res.render("urls_index", templateVars);
 });
 
 // shows all the URL, using the JSON format
@@ -81,7 +89,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 // display the specific record on a page
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
   res.render("urls_show", templateVars);
 });
 
@@ -95,5 +103,13 @@ app.post("/urls/:shortURL", (req, res) => {
   const longURL = req.body.newURL;
   const shortURL = req.body.shortURL;
   urlDatabase[shortURL] = longURL;
-  res.render("urls_index", {urls: urlDatabase});
+  let templateVars = { username: req.cookies["username"], urls: urlDatabase }
+  // res.render("urls_index", {urls: urlDatabase});
+  res.redirect("urls_index", templateVars)
+})
+
+app.post("/login", (req, res) => {
+  // console.log("username", req.body.username );
+  res.cookie("username", req.body.username)
+  res.redirect("/urls");
 })
