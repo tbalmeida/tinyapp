@@ -1,3 +1,4 @@
+
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-success">
     <a class="navbar-brand" href="/urls">TinyApp</a>
@@ -10,11 +11,19 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
       <div name="myLogin" style="position: absolute; right: 10px;">
+        <%if(!username) { %>
         <form method="POST" action="/login">
           <label style="color: white;" for="username">Username: </label>  
           <input type="text" name="username" style="margin-right: 5pt;">
           <input type="submit" value="Sign in" class="btn btn-light">
         </form>
+        <% } else { %>
+          <form method="POST" action="/logout">
+            <label style="color: white;" for="username">Username: </label>  
+            <input type="text" disabled name="username" style="margin-right: 5pt;" value="<%=username%>">
+            <input type="submit" value="Sign out" class="btn btn-light">
+          </form>
+          <% } %>
       </div>
     </div>
   </nav>
