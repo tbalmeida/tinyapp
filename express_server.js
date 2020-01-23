@@ -79,9 +79,14 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  console.log("user", req.user_id )
-  let templateVars = getCookieInfo( req, res );
-  res.render("urls_new", templateVars);
+  if (!!req.cookies.user_id ){
+    console.log("user", req.cookies.user_id )
+    let templateVars = getCookieInfo( req, res );
+    console.log(templateVars)
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 // shows all the URL, using the JSON format

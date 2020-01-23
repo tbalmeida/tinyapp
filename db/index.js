@@ -15,8 +15,20 @@ const users = {
 
 const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
+  dasdas: { longURL: "https://www.msn.ca", userID: "uid200" }
+
 };
+
+const getMyURLs = function ( user_id, objLib ){
+  let objReturn = {};
+  for(url in objLib){
+    if( objLib[url].userID === uid ){
+      objReturn[url] = {longURL: objLib[url].longURL};
+    }
+  }  
+  return objReturn;
+}
 
 // Chars used to generate the short string.
 const aChar = 'abcdefghijklmnopqrstuvxwyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
