@@ -1,5 +1,9 @@
 // data and related functions used on TinyURL
 
+// used to save passwords
+const bcrypt = require('bcrypt');
+
+
 const users = { 
   "userRandomID": {
     id: "userRandomID", 
@@ -130,7 +134,10 @@ const addUser = function ( email, password ) {
   console.log("checking" ,email)
   if( !userExistsByEmail( email) ){
     const userID = generateRandomString(10, aChar);
-    users[userID] = {id: userID, email: email, password: password};
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
+    users[userID] = {id: userID, email: email, password: hashedPassword};
+    console.log("new user", users)
     return userID;
 
   } else {
@@ -144,7 +151,9 @@ const addUser = function ( email, password ) {
 const userLogin = function ( email, password) {
   for (const user of Object.values(users)) {
     if (user.email === email) {
-      return password === user.password ? true : false;
+      // return password === user.password ? true : false;
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      return bcrypt.compareSync(password, hashedPassword)
     }
   }  
 }
