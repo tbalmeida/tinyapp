@@ -167,8 +167,9 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 app.post("/urls/:shortURL/delete", (req, res) => {
   let shortURL = req.params.shortURL;
   // console.log("Delete this URL", shortURL);
-  if ( deleteURL(shortURL) ) {
-    res.redirect("/urls");
+  if ( deleteURL(shortURL, req.cookies.user_id) ) {
+    templateVars = letTemplateVars(req, res);
+    res.render("urls_index", templateVars);
   } else {
     res.status(400).send("Only the owner can delete its URL.");
   }
