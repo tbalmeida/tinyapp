@@ -10,25 +10,20 @@ const users = {
     id: "user2RandomID", 
     email: "user2@example.com", 
     password: "dishwasher-funk"
+  },
+  "user1": {
+    id: "user1", 
+    email: "user1@gmail.com", 
+    password: "123"
   }
 }
 
 const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
-  dasdas: { longURL: "https://www.msn.ca", userID: "uid200" }
+  b6UTxQ: { longURL: "https://www.tsn.ca", user_id: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", user_id: "user2RandomID" },
+  hahaha: { longURL: "https://www.msn.ca", user_id: "uid200" }
 
 };
-
-const getMyURLs = function ( user_id, objLib ){
-  let objReturn = {};
-  for(url in objLib){
-    if( objLib[url].userID === uid ){
-      objReturn[url] = {longURL: objLib[url].longURL};
-    }
-  }  
-  return objReturn;
-}
 
 // Chars used to generate the short string.
 const aChar = 'abcdefghijklmnopqrstuvxwyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -47,11 +42,44 @@ function generateRandomString( pLength, inputArray ) {
 
 // adds a new URL to the library and returns its Id.
 // to do: check if the URL is already in the library
-const addURL = function ( URL ){
+const addURL = function ( URL, userID ){
   let newID = generateRandomString(6, aChar);
-  {urlDatabase[newID] =  URL};
+  // {urlDatabase[newID] =  URL};
+  urlDatabase[newID] = {longURL: URL, user_id: userID}
   return newID;
 }
+
+// updates a URL IF the user_id is the owner
+const updateURL = function ( shortURL, longURL, user_id){
+  if( urlDatabase[shortURL].user_id === user_id){
+    urlDatabase[shortURL].longURL = longURL;
+    return true;
+  }
+  return false;
+}
+
+// deletes a URL IF the user_id is the owner
+const deleteURL = function ( shortURL, user_id){
+  if( urlDatabase[shortURL].user_id === user_id){
+    delete urlDatabase[shortURL];
+    return true;
+  }
+  return false;
+}
+
+// USER SPECIFC FUNCTIONS BELOW
+
+const urlsForUser = function ( user_id ){
+  let filteredURLDB = { }
+  for(url in urlDatabase){
+    if( urlDatabase[url].user_id === user_id ){
+      filteredURLDB[url] = {longURL: urlDatabase[url].longURL};
+    }
+  }  
+  return filteredURLDB;
+}
+
+//  console.log(urlsForUser(undefined))
 
 // checks if a user exist by looking for an email
 const emailExists = function (email) {
@@ -74,8 +102,14 @@ const getUserID = function (email) {
 }
 
 const getUserEmail = function (user_id){
-  return users[user_id].email;
+  if (user_id && users[user_id]){
+    return users[user_id].email;
+  } else {
+    return undefined;
+  }
 }
+
+// console.log( getUserEmail("user1"));
 
 // check if user exists, searching w/ email
 const userExistsByEmail = function (email) {
@@ -106,6 +140,7 @@ const addUser = function ( email, password ) {
   }
 }
 
+// verifies user credentials and returns true/false
 const userLogin = function ( email, password) {
   for (const user of Object.values(users)) {
     if (user.email === email) {
@@ -117,12 +152,14 @@ const userLogin = function ( email, password) {
 module.exports = 
   { urlDatabase, 
     users,
-    addURL,
     addUser,
-    userExistsByEmail,
-    getUserEmail,
+    userLogin,
     getUserID,
+    getUserEmail,
     userExistsByEmail,
     userExistsbyID,
-    userLogin
+    addURL,
+    deleteURL,
+    updateURL,
+    urlsForUser
   }
