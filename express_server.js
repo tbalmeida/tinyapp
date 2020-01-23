@@ -1,9 +1,23 @@
 const express = require("express");
-const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
-
+const app = express();
 const PORT = 8080; // default port 8080
+const bodyParser = require("body-parser");
+const cookieSession = require('cookie-session');
 
+app.set("view engine", "ejs");
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieSession({
+  name: 'session',
+  keys: ['Paranapiacaba', 'Pindamonhangaba'],
+  // Cookie Options
+  maxAge: 30000 //   ms
+}))
+
+
+// app.use(cookieParser);
+app.listen(PORT, () => {
+  console.log(`TinyURL server listening on port ${PORT}!`);
+});
 // databases and related functions
 const { 
   urlDatabase,
@@ -20,52 +34,51 @@ const {
   urlsForUser } = require("./db");
 
 // server config
-const app = express();
-app.use(cookieParser());
-app.use(bodyParser.urlencoded({extended: true}));
-app.set("view engine", "ejs");
-app.listen(PORT, () => {
-  console.log(`TinyURL server listening on port ${PORT}!`);
-});
 
 // console.log("### User database")
 // console.log(users)
 // console.log("### URL database")
 // console.log( urlDatabase)
 
-const getCookieInfo = function ( req, res ) {
-  let objReturn = {};
+// const getCookieInfo = function ( req, res ) {
+//   let objReturn = {};
 
-  let user_id = req.cookies["user_id"];
+//   let user_id = req.session.user_id;
 
-  if ( user_id && userExistsbyID(user_id) ){
-    // valid user
-    let user = { user_id: user_id, email: users[user_id].email}
-    objReturn = { user: user, urls: urlDatabase };
+//   if ( user_id && userExistsbyID(user_id) ){
+//     // valid user
+//     let user = { user_id: user_id, email: users[user_id].email}
+//     objReturn = { user: user, urls: urlDatabase };
 
-  } else {
-    // clean the cookie, the user isn't valid
-    res.clearCookie("user_id");
-    objReturn = {urls: urlDatabase};
+//   } else {
+//     // clean the cookie, the user isn't valid
+//     // res.clearCookie("user_id");
+//     objReturn = {urls: urlDatabase};
 
-  }
-  return objReturn
-}
+//   }
+//   return objReturn
+// }
 
 const letTemplateVars = function(req, res) {
   let templateVars;
-  console.log(req.header.user_id, req.cookies.user_id)
+  // console.log(req.header.user_id, req.cookies.user_id)
   if (req.header.user_id){
     console.log("...letTemplateVars, using header")
     const email = getUserEmail(req.header.user_id);
     const myURLs = urlsForUser(req.header.user_id);
     templateVars = { user: {user_id: req.header.user_id, email: email}, urls: myURLs };
-  } else if ( req.cookies.user_id ) {
+  // } else if ( req.cookies.user_id ) {
+  } else if ( req.session.user_id ) {
+    let user_id = req.session.user_id;
     console.log("...letTemplateVars, using cookies")
 
-    const email = getUserEmail(req.cookies.user_id);
-    const myURLs = urlsForUser(req.cookies.user_id);
-    templateVars = { user: {user_id: req.cookies.user_id, email: email}, urls: myURLs };
+    const email = getUserEmail(user_id);
+    const myURLs = urlsForUser(user_id);
+    templateVars = { user: {user_id: user_id, email: email}, urls: myURLs };
+    // vrs anterior
+    // const email = getUserEmail(req.cookies.user_id);
+    // const myURLs = urlsForUser(req.cookies.user_id);
+    // templateVars = { user: {user_id: req.cookies.user_id, email: email}, urls: myURLs };
   } else {
     console.log("...letTemplateVars, using empty")
 
@@ -99,14 +112,16 @@ app.get("/urls", (req, res) => {
 
 // adds a new URL to the database
 app.post("/urls", (req, res) => {
-  addURL( req.body.longURL, req.cookies.user_id );
+  addURL( req.body.longURL, req.session.user_id);
+  // addURL( req.body.longURL, req.cookies.user_id );
   let templateVars = letTemplateVars(req, res);
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  console.log( req.cookies.user_id );
-  if (!req.cookies.user_id) {
+  // console.log( req.cookies.user_id );
+  // if (!req.cookies.user_id) {
+  if (!req.session.user_id) {
     res.redirect("/login");
   } else {
     let templateVars = letTemplateVars(req, res);
@@ -127,7 +142,8 @@ app.get("/u/:shortURL", (req, res) => {
 
 // display the specific record on a page
 app.get("/urls/:shortURL", (req, res) => {
-  let user_id = req.cookies.user_id;
+  // let user_id = req.cookies.user_id;
+  let user_id = req.session.user_id;
   let email = users[user_id].email;
 console.log("/urls/:shortURL", user_id, email)
   let user = { user_id: user_id, email: email}
@@ -145,7 +161,8 @@ app.post("/urls/:shortURL", (req, res) => {
 app.get("/urls/:shortURL/edit", (req, res) => {
   let shortURL = req.params.shortURL;
   let longURL = urlDatabase[shortURL].longURL;
-  let user = { user_id: req.cookies.user_id, email: users[req.cookies.user_id].email };
+  // let user = { user_id: req.cookies.user_id, email: users[req.cookies.user_id].email };
+  let user = { user_id: req.session.user_id, email: users[req.session.user_id].email };
   let templateVars = { user, shortURL: shortURL, longURL: longURL};
   res.render("urls_show", templateVars);
   })
@@ -153,7 +170,8 @@ app.get("/urls/:shortURL/edit", (req, res) => {
 app.post("/urls/:shortURL/edit", (req, res) => {
   let shortURL = req.params.shortURL;
   let longURL = req.body.newURL;
-  let user_id = req.cookies.user_id;
+  // let user_id = req.cookies.user_id;
+  let user_id = req.session.user_id;
   let user = { user_id: user_id, email: users[user_id].email };
   let templateVars = { user, urls: urlDatabase};
   if ( updateURL(shortURL, longURL, user_id) ){
@@ -167,8 +185,9 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 app.post("/urls/:shortURL/delete", (req, res) => {
   let shortURL = req.params.shortURL;
   // console.log("Delete this URL", shortURL);
-  if ( deleteURL(shortURL, req.cookies.user_id) ) {
-    templateVars = letTemplateVars(req, res);
+  // if ( deleteURL(shortURL, req.cookies.user_id) ) {
+  if ( deleteURL(shortURL, req.session.user_id) ) {
+      templateVars = letTemplateVars(req, res);
     res.render("urls_index", templateVars);
   } else {
     res.status(400).send("Only the owner can delete its URL.");
@@ -182,14 +201,15 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  res.clearCookie("user_id");
+  // res.clearCookie("user_id");
   
   if ( userLogin(email, password)) {
     let user_id = getUserID(email);
     console.log("user id no login", user_id)
 
     // let templateVars = { user: user, urls:urlDB};
-    res.cookie("user_id", user_id)
+    req.session.user_id = user_id;
+    // res.cookie("user_id", user_id)
     let user = {user_id: user_id, email: email};
     let templateVars = {user: user, urls: urlsForUser(user_id) };
     res.render("urls_index", templateVars);
@@ -200,7 +220,8 @@ app.post("/login", (req, res) => {
 })
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  // res.clearCookie("user_id");
+  req.session = null
   res.redirect("/urls");
 })
 
@@ -215,7 +236,8 @@ app.post("/register", (req, res) => {
   
   if ( password.length && !userExistsByEmail(email) ) {
     const newUser = addUser( email, password);
-    res.cookie("user_id", newUser);
+    req.session.user_id = newUser;
+    // res.cookie("user_id", newUser);
     let templateVars = letTemplateVars( req, res );
     res.render("urls_index", templateVars);
 
