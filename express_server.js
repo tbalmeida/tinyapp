@@ -24,6 +24,7 @@ app.listen(PORT, () => {
 });
 
 console.log("... Server up!")
+console.log(users)
 
 const getCookieInfo = function ( req, res ) {
   let objReturn = {};
@@ -44,9 +45,7 @@ const getCookieInfo = function ( req, res ) {
   return objReturn
 }
 
-
     // handles
-
 app.get("/", (req, res) => {
   let templateVars = { username: req.cookies["username"], urls: urlDatabase }
   res.render("urls_index", templateVars);
@@ -72,14 +71,16 @@ app.get("/urls", (req, res) => {
 // adds a new URL to the database
 app.post("/urls", (req, res) => {
   addURL( req.body.longURL );
+  console.log("user", req.user_id)
   let templateVars = getCookieInfo( req, res );
+  console.log('templateVars', templateVars)
   // let templateVars = { username: req.cookies["user_id"], urls: urlDatabase }
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
+  console.log("user", req.user_id )
   let templateVars = getCookieInfo( req, res );
-  // let templateVars = { username: req.cookies["username"] }
   res.render("urls_new", templateVars);
 });
 
@@ -112,7 +113,6 @@ app.post("/urls/:shortURL", (req, res) => {
   const longURL = req.body.newURL;
   const shortURL = req.body.shortURL;
   urlDatabase[shortURL] = longURL;
-  // let templateVars = { username: req.cookies["username"], urls: urlDatabase }
   let templateVars = getCookieInfo( req, res );
   res.redirect("urls_index", templateVars)
 })
@@ -129,11 +129,10 @@ app.post("/login", (req, res) => {
   if ( userLogin(email, password)) {
 
     let user_id = getUserID(email);
+    let user = { id: user_id, email: email };
+    let templateVars = { user: user, urls:urlDatabase};
     res.cookie("user_id", user_id)
-    let templateVars = getCookieInfo( req, res );
     res.render("urls_index", templateVars);
-
-    res.redirect("/urls");
   } else {
     res.status(400).send("Invalid credentials.")
   }
@@ -159,10 +158,13 @@ app.post("/register", (req, res) => {
   if ( password.length && !userExistsByEmail(email) ) {
     // console.log("Adding new user");
     const newUser = addUser( email, password);
-
+// console.log("new user:", newUser, "---")
     // console.log("new user", newUser);
-    res.cookie("user_id", newUser,);
-    res.redirect("/urls");
+    res.cookie("user_id", newUser);
+    // let templateVars = getCookieInfo( req, res );
+    let user = { id: newUser, email: email };
+    let templateVars = { user: user, urls:urlDatabase};
+    res.render("urls_index", templateVars);
 
   } else {
     if ( userExistsByEmail(email) ){

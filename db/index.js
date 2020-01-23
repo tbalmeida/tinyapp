@@ -14,8 +14,8 @@ const users = {
 }
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
 
 // Chars used to generate the short string.
@@ -55,7 +55,7 @@ const emailExists = function (email) {
 const getUserID = function (email) {
   for (const user of Object.values(users)) {
     if (user.email === email) {
-      return user;
+      return user.id;
     }
   }
   return;
@@ -81,12 +81,14 @@ const userExistsbyID = function ( user_id ){
 }
 
 const addUser = function ( email, password ) {
+  console.log("checking" ,email)
   if( !userExistsByEmail( email) ){
     const userID = generateRandomString(10, aChar);
     users[userID] = {id: userID, email: email, password: password};
     return userID;
 
   } else {
+    console.log("already exists")
     // user already exists. Return empty.
     return "";
   }
@@ -112,7 +114,3 @@ module.exports =
     userExistsbyID,
     userLogin
   }
-
-
-
-console.log( userLogin( "user@example.com", "purple-monkey-dinosaurs"));
