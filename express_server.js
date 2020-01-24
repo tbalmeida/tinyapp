@@ -21,7 +21,10 @@ app.listen(PORT, () => {
 // databases and related functions
 const { 
   urlDatabase,
-  users,
+  users
+   } = require("./db");
+
+const { 
   addURL,
   updateURL,
   deleteURL,
@@ -31,61 +34,13 @@ const {
   userLogin,
   getUserID,
   getUserEmail,
-  urlsForUser } = require("./db");
+  urlsForUser,
+  letTemplateVars
+  } = require("./helper");
+  
 
 // server config
 
-// console.log("### User database")
-// console.log(users)
-// console.log("### URL database")
-// console.log( urlDatabase)
-
-// const getCookieInfo = function ( req, res ) {
-//   let objReturn = {};
-
-//   let user_id = req.session.user_id;
-
-//   if ( user_id && userExistsbyID(user_id) ){
-//     // valid user
-//     let user = { user_id: user_id, email: users[user_id].email}
-//     objReturn = { user: user, urls: urlDatabase };
-
-//   } else {
-//     // clean the cookie, the user isn't valid
-//     // res.clearCookie("user_id");
-//     objReturn = {urls: urlDatabase};
-
-//   }
-//   return objReturn
-// }
-
-const letTemplateVars = function(req, res) {
-  let templateVars;
-  // console.log(req.header.user_id, req.cookies.user_id)
-  if (req.header.user_id){
-    console.log("...letTemplateVars, using header")
-    const email = getUserEmail(req.header.user_id);
-    const myURLs = urlsForUser(req.header.user_id);
-    templateVars = { user: {user_id: req.header.user_id, email: email}, urls: myURLs };
-  // } else if ( req.cookies.user_id ) {
-  } else if ( req.session.user_id ) {
-    let user_id = req.session.user_id;
-    console.log("...letTemplateVars, using cookies")
-
-    const email = getUserEmail(user_id);
-    const myURLs = urlsForUser(user_id);
-    templateVars = { user: {user_id: user_id, email: email}, urls: myURLs };
-    // vrs anterior
-    // const email = getUserEmail(req.cookies.user_id);
-    // const myURLs = urlsForUser(req.cookies.user_id);
-    // templateVars = { user: {user_id: req.cookies.user_id, email: email}, urls: myURLs };
-  } else {
-    console.log("...letTemplateVars, using empty")
-
-    templateVars = { urls: urlsForUser("") };
-  }
-  return templateVars;
-}
 
 // use after using session
 // app.use((req, res, next) => {
