@@ -24,6 +24,10 @@ Date finished: Jan 24, 2020 - 2020Jan06 Cohort in Calgary-Alta
 - README.md - explains the assignment, including requirements, and its implementation;
 - package.json - information regarding installing the project
 
+### Final Product
+!["Screenshot of URLs page](https://github.com/tbalmeida/tinyapp/blob/master/docs/TinyURLScreenshot01.png)
+!["Screenshot of URL edit page](https://github.com/tbalmeida/tinyapp/blob/master/docs/TinyURLScreenshot02.png)
+
 ### Testing
 
 **Credentials:**
