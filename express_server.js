@@ -102,7 +102,6 @@ app.post("/urls/:shortURL", (req, res) => {
 app.get("/urls/:shortURL/edit", (req, res) => {
   let shortURL = req.params.shortURL;
   let longURL = urlDatabase[shortURL].longURL;
-  // let user = { user_id: req.cookies.user_id, email: users[req.cookies.user_id].email };
   let user = { user_id: req.session.user_id, email: users[req.session.user_id].email };
   let templateVars = { user, shortURL: shortURL, longURL: longURL};
   res.render("urls_show", templateVars);
@@ -111,7 +110,6 @@ app.get("/urls/:shortURL/edit", (req, res) => {
 app.post("/urls/:shortURL/edit", (req, res) => {
   let shortURL = req.params.shortURL;
   let longURL = req.body.newURL;
-  // let user_id = req.cookies.user_id;
   let user_id = req.session.user_id;
   let user = { user_id: user_id, email: users[user_id].email };
   let templateVars = { user, urls: urlDatabase};
@@ -154,7 +152,6 @@ app.post("/login", (req, res) => {
   }
 })
 
-
 app.post("/login", (req, res) => {
   const password = req.body['password'];
   const email = req.body['emailAddress'];
@@ -174,7 +171,6 @@ app.post("/login", (req, res) => {
 
 
 app.post("/logout", (req, res) => {
-  // res.clearCookie("user_id");
   req.session = null
   res.redirect("/urls");
 })
@@ -191,7 +187,6 @@ app.post("/register", (req, res) => {
   if ( password.length && !userExistsByEmail(email) ) {
     const newUser = addUser( email, password);
     req.session.user_id = newUser;
-    // res.cookie("user_id", newUser);
     let templateVars = letTemplateVars( req, res );
     res.render("urls_index", templateVars);
 

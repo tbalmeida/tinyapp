@@ -8,28 +8,28 @@ const bcrypt = require('bcrypt');
 // Chars used to generate the short string.
 const aChar = 'abcdefghijklmnopqrstuvxwyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
-// This function generates a string with the length passed as parameter, using the array as input
+// This function generates a string with the length passed as parameter, using the array aChar as input
 const generateRandomString = function ( pLength, inputArray ) {
   let arrayLength = inputArray.length - 1;
   let vShortStr = "";
-
+  
+  // loops for the length requested, selection randomly a char from the array to compose the ID
   for (let i = 1; i <= pLength; i++){
     vShortStr += aChar[Math.round(Math.random() * arrayLength) ];
   }
-
   return vShortStr;
 }
 
 //      //      //      //      URLs functions
+
 // adds a new URL to the library and returns its Id.
-// to do: check if the URL is already in the library
 const addURL = function ( URL, userID ) {
   let newID = generateRandomString(6, aChar);
   urlDatabase[newID] = {longURL: URL, user_id: userID}
   return newID;
 }
 
-// updates a URL IF the user_id is the owner
+// updates a URL IF the user_id is the owner. Returns true in case of success
 const updateURL = function ( shortURL, longURL, user_id) {
   if( urlDatabase[shortURL].user_id === user_id){
     urlDatabase[shortURL].longURL = longURL;
@@ -38,7 +38,7 @@ const updateURL = function ( shortURL, longURL, user_id) {
   return false;
 }
 
-// deletes a URL IF the user_id is the owner
+// deletes a URL IF the user_id is the owner. Returns true in case of success
 const deleteURL = function ( shortURL, user_id) {
   if( urlDatabase[shortURL].user_id === user_id){
     delete urlDatabase[shortURL];
@@ -49,36 +49,29 @@ const deleteURL = function ( shortURL, user_id) {
 
 // USER SPECIFC FUNCTIONS BELOW
 
+// filters the URLs and send a object to the user 
 const urlsForUser = function ( user_id ) {
-  let filteredURLDB = { }
+  let filteredURLs = { }
   for(url in urlDatabase){
     if( urlDatabase[url].user_id === user_id ){
-      filteredURLDB[url] = {longURL: urlDatabase[url].longURL};
+      filteredURLs[url] = {longURL: urlDatabase[url].longURL};
     }
   }  
-  return filteredURLDB;
+  return filteredURLs;
 }
 
-// checks if a user exist by looking for an email
-const emailExists = function (email) {
-  for (const user of Object.values(users)) {
-    if (user.email === email) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// // get userID by looking for an email
+// // get userID by looking for an email. If not 
 const getUserID = function (email) {
   for (const user of Object.values(users)) {
     if (user.email === email) {
       return user.id;
     }
   }
+  // if nout found, return.
   return;
 }
 
+// check user_id is valid and if the user exists, returns its email
 const getUserEmail = function (user_id) {
   if (user_id && users[user_id]){
     return users[user_id].email;
@@ -87,6 +80,7 @@ const getUserEmail = function (user_id) {
   }
 }
 
+// returns the user id using email as key
 const getUserByEmail = function (email, database) {
   for (const user of Object.values(database)) {
     if (user.email === email) {
@@ -106,10 +100,6 @@ const userExistsByEmail = function (email) {
 }
 
 // check if a user exists using his ID
-const userExistsbyID = function ( user_id ) {
-  return users[user_id] ? true : false;  
-}
-
 const addUser = function ( email, password ) {
   if( !userExistsByEmail( email) ){
     const userID = generateRandomString(10, aChar);
@@ -137,6 +127,7 @@ const userLogin = function ( email, password) {
   }
 }
 
+// creates an object with user id, email and URLs that can be used
 const letTemplateVars = (req, res)  => {
   let templateVars;
   if (req.header.user_id){
