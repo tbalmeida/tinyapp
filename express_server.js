@@ -13,42 +13,34 @@ app.use(cookieSession({
   maxAge: 30000 //   ms
 }))
 
-
 // app.use(cookieParser);
 app.listen(PORT, () => {
   console.log(`TinyURL server listening on port ${PORT}!`);
 });
 // databases and related functions
-const { 
-  urlDatabase,
-  users
-   } = require("./db");
+const { urlDatabase } = require("./db/urls");
+const { users } = require("./db/users");
 
-const { 
+const {
   addURL,
   updateURL,
   deleteURL,
-  addUser,
-  userExistsByEmail,
-  userExistsbyID,
-  userLogin,
-  getUserID,
-  getUserEmail,
   urlsForUser,
+  getUserID,
+  userExistsByEmail,
+  addUser,
+  userLogin,
   letTemplateVars
-  } = require("./helper");
-  
-
-// server config
+} = require("./helper");
 
 
 // use after using session
-// app.use((req, res, next) => {
-//   const userID = req.session.user_id;
-//   const user = users[userID];
-//   req.user = user;
-//   next();
-// })
+app.use((req, res, next) => {
+  const userID = req.session.user_id;
+  const user = users[userID];
+  req.user = user;
+  next();
+})
 
     // handles
 app.get("/", (req, res) => {
@@ -60,7 +52,6 @@ app.get("/", (req, res) => {
 // shows all the URLs in a list
 app.get("/urls", (req, res) => {
   let templateVars = letTemplateVars(req, res);
-  console.log("/urls", templateVars)  
 
   res.render("urls_index", templateVars);
 });
@@ -74,8 +65,6 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  // console.log( req.cookies.user_id );
-  // if (!req.cookies.user_id) {
   if (!req.session.user_id) {
     res.redirect("/login");
   } else {
@@ -91,7 +80,6 @@ app.get("/urls.json", (req, res) => {
 
 // redirects the browser to the long URL
 app.get("/u/:shortURL", (req, res) => {
-  // console.log("u/:shortURL, login:", req.cookies.user_id, "URL:", req.params.shortURL, ", ", urlDatabase[req.params.shortURL].longURL )
   res.redirect(urlDatabase[req.params.shortURL].longURL);
 });
 
@@ -100,7 +88,6 @@ app.get("/urls/:shortURL", (req, res) => {
   // let user_id = req.cookies.user_id;
   let user_id = req.session.user_id;
   let email = users[user_id].email;
-console.log("/urls/:shortURL", user_id, email)
   let user = { user_id: user_id, email: email}
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: user };
 
@@ -109,7 +96,6 @@ console.log("/urls/:shortURL", user_id, email)
 
 // redirects the browser to the long URL  //redo this one
 app.post("/urls/:shortURL", (req, res) => {
-  console.log( req.params.longURL)
   res.redirect(urlDatabase[req.params.shortURL]);
 });
 
@@ -139,8 +125,6 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 // deletes a URL from the base
 app.post("/urls/:shortURL/delete", (req, res) => {
   let shortURL = req.params.shortURL;
-  // console.log("Delete this URL", shortURL);
-  // if ( deleteURL(shortURL, req.cookies.user_id) ) {
   if ( deleteURL(shortURL, req.session.user_id) ) {
       templateVars = letTemplateVars(req, res);
     res.render("urls_index", templateVars);
@@ -156,15 +140,11 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  // res.clearCookie("user_id");
   
   if ( userLogin(email, password)) {
     let user_id = getUserID(email);
-    console.log("user id no login", user_id)
 
-    // let templateVars = { user: user, urls:urlDB};
     req.session.user_id = user_id;
-    // res.cookie("user_id", user_id)
     let user = {user_id: user_id, email: email};
     let templateVars = {user: user, urls: urlsForUser(user_id) };
     res.render("urls_index", templateVars);
@@ -173,6 +153,25 @@ app.post("/login", (req, res) => {
     res.status(400).send("Invalid credentials.")
   }
 })
+
+
+app.post("/login", (req, res) => {
+  const password = req.body['password'];
+  const email = req.body['emailAddress'];
+  
+  if(password && email ){
+    if ( userLogin(email, password) ) {
+      req.session.user_id = getUserID(email);
+      res.redirect('/urls');
+    } else {
+      res.status(400).send("Credential information can't be empty")
+    }
+  } else {
+    res.status(400).send("Credential information can't be empty")
+  }
+
+});
+
 
 app.post("/logout", (req, res) => {
   // res.clearCookie("user_id");

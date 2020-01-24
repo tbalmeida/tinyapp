@@ -14,24 +14,26 @@
 
   <main style="margin: 1em;">
     <h3>My URLs</h3>
-    <table class="table">
+    <table border=0 cellpadding=2 cellspacing=0 width="80%" align="center" class="table table-hover">
       <thead>
         <tr>
-          <th scope="col">Short URL</th>
-          <th scope="col">Long URL</th>
-          <th scope="col">Edit</th>
-          <th scope="col">Delete</th>
+          <th scope="col" width="15%" style="text-align: center;">Short URL</th>
+          <th scope="col" width="55%" style="text-align: left;">Long URL</th>
+          <th scope="col" width="15%" style="text-align: center;">Edit</th>
+          <th scope="col" width="15%" style="text-align: center;">Delete</th>
         </tr>
       </thead>
       <tbody>
         <% for(let url in urls) { %>
           <tr>
-            <td><a href="/u/<%= url %>" target="blank"><%= url %></a></td>
-            <td><%= urls[url].longURL %></td>
-            <td> <form method="GET" action="/urls/<%= url %>/edit">
-              <input type="submit" name="btnEdit" type="submit" value="Edit" class="btn btn-outline-primary btn-lg">
+            <td style="text-align: center; vertical-align: middle;"><a href="/u/<%= url %>" target="blank"><%= url %></a></td style="text-align: center;">
+            <td style="text-align: left; vertical-align: middle;"><%= urls[url].longURL %></td style="text-align: center;">
+            <td align="center" valign="center"> <form method="GET" action="/urls/<%= url %>/edit">
+              <input type="submit" name="btnEdit" type="submit" value="Edit" class="btn btn-outline-primary btn-sm">
             </form></td>
-           <td> <form method="POST" action="/urls/<%= url %>/delete"><input type="submit" name="btnDelete" type="submit" value="Delete" class="btn btn-outline-danger btn-lg"></form></td>
+           <td style="text-align: center;"> <form method="POST" action="/urls/<%= url %>/delete">
+            <input type="submit" name="btnDelete" type="submit" value="Delete" class="btn btn-outline-danger btn-sm">
+          </form></td>
           </tr>
         <% } %>
       </tbody>
