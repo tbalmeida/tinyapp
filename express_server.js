@@ -103,6 +103,7 @@ app.get("/urls/:shortURL/edit", (req, res) => {
   let shortURL = req.params.shortURL;
   let longURL = urlDatabase[shortURL].longURL;
   let user = { user_id: req.session.user_id, email: users[req.session.user_id].email };
+  console.log("user:", user)
   let templateVars = { user, shortURL: shortURL, longURL: longURL};
   res.render("urls_show", templateVars);
   })
@@ -138,13 +139,14 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  
+  console.log(email, password);
   if ( userLogin(email, password)) {
     let user_id = getUserID(email);
 
     req.session.user_id = user_id;
     let user = {user_id: user_id, email: email};
     let templateVars = {user: user, urls: urlsForUser(user_id) };
+    
     res.render("urls_index", templateVars);
 
   } else {

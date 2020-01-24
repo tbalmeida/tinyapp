@@ -118,10 +118,15 @@ const addUser = function ( email, password ) {
 const userLogin = function ( email, password) {
  
   const user_id = getUserByEmail(email, users);
-  const storedPassword = users[user_id].password.toString();
+  
+  if (user_id) {
+    const storedPassword = users[user_id].password.toString();
  
-  if (user_id && storedPassword){
-    return bcrypt.compareSync(password, storedPassword);
+    if (user_id && storedPassword){
+      return bcrypt.compareSync(password, storedPassword);
+    } else {
+      return false;
+    }
   } else {
     return false;
   }
